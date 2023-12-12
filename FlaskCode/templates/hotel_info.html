@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="jumbo">
+    <div class="btn-container">
+        <body>
+            <head>
+            </head>
+            <h3>Enter Hotel Information</h3>
+            <form method="POST" action="{{ url_for('hotelResult') }}">
+                <label>Number of People:</label>
+                <input type="text1" name="people" id="people"><br>
+                <label>Check In Date:</label>
+                <input type="date" id="checkIn" name="checkIn"><br>
+                <label>Check Out Date:</label>
+                <input type="date" id="checkOut" name="checkOut"><br><br>
+                <input type="hidden" name="user_input" value="{{ user_input }}"><br>
+                <input type="submit" value="Submit">
+            </form>   
+        </body>
+    </div>
+</div>
+{% endblock %}

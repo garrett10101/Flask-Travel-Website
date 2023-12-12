@@ -1,0 +1,101 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="jumbo text-center">
+  <head>
+    <title>Flight Prices</title>
+  </head>
+  <h1>Results for {{user_input}}</h1>
+  <body>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h4>5-Day Weather Forecast at {{ user_input }}:</h4>
+      <div class="forecast-container">
+          {% for forecast in dest_weather %}
+            <div class="forecast">
+              <p>Date: {{ forecast.date }}</p>
+              <p>{{ forecast.description }}</p>
+              <p>Temperature: {{ forecast.temp }}°C</p>
+              <p>Humidity: {{ forecast.humidity }}%</p>
+              <img src="{{ forecast.icon }}" alt="Weather icon">
+            </div>
+          {% endfor %}
+        </div>
+        
+</div>
+      <div id="map">
+        <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&callback=initMap" async defer></script>
+      </div>
+    <h4>{{adultNum}} Adults. Check In: {{checkIn}}. Check Out: {{checkOut}}</h4>
+    <table>
+      <tr>
+        <th>Hotel Name</th>
+        <th>Address</th>
+        <th>Price(Total)</th>
+      </tr>
+      {% for entity in data['result'] %}
+      <tr>
+        <td>{{ entity['hotel_name'] }}</td>
+        <td>{{ entity['address'] + " " + entity['zip'] }}</td>
+        <td>{{ entity['price_breakdown']['gross_price'] }}</td>
+        <td><img src="{{ entity['main_photo_url'] }}" alt="City Image"></td>
+      </tr>
+      {% endfor %}
+    </table>
+    
+  </body>
+</div>
+<script>
+  function initMap() {
+    var userCity = '{{ user_input }}';
+    var geocoder = new google.maps.Geocoder();
+
+    // Geocode the user's city to get its coordinates
+    geocoder.geocode({ 'address': userCity }, function(results, status) {
+      if (status == 'OK') {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 10,
+          center: results[0].geometry.location
+        });
+      } else {
+        alert('Geocode was not successful for the following reason: ' + status);
+      }
+
+      // Get the hotels data from Flask
+      var hotels = JSON.parse('{{ hotels|tojson }}');
+
+      // Function to create geocoding callback for each hotel
+      function createMarkerCallback(name, address, map) {
+        return function(results, status) {
+          if (status == 'OK') {
+            var marker = new google.maps.Marker({
+              position: results[0].geometry.location,
+              map: map,
+              title: name
+            });
+
+            // Add click event listener to marker
+            marker.addListener('click', function() {
+              var infoWindow = new google.maps.InfoWindow({
+                content: '<div>' + name + '</div>'
+              });
+              infoWindow.open(map, marker);
+            });
+          } else {
+            alert('Geocode was not successful for the following reason: ' + status);
+          }
+        };
+      }
+
+      // Geocode each hotel and add a marker to the map
+      for (var name in hotels) {
+        if (hotels.hasOwnProperty(name)) {
+          var city = hotels[name];
+          var address = name + ', ' + city;
+
+          geocoder.geocode({ 'address': address }, createMarkerCallback(name, address, map));
+        }
+      }
+    });
+  }
+</script>
+{% endblock %}

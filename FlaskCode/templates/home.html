@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+  h3{text-align: center;}
+  #map {
+    height: 400px;
+    width: 100%;
+    margin-top: 30px;
+  }
+</style>
+
+
+
+<div class="jumbo">
+  <h2>Welcome to Travel Planner<h2>
+  <body>
+    <div class="btn-container">
+      <form method="POST" action="{{ url_for('flight_info') }}">
+          <input type="hidden" name="user_input" value="{{ user_input }}">
+          <button type="submit" name="flight" value="1" class="btn">Flights</button>
+        </form>  
+    </div>
+
+    <br>
+    <h4>Find Hotels:</h4>
+    <form method="POST" action="{{ url_for('hotels') }}">
+      <input type="text" name="user_input" placeholder="Enter a city name">
+      <input type="submit" value="Search">
+    </form>
+    <br>
+    <h4>Find Activities:</h4>
+      <form method="POST" action="{{ url_for('act') }}">
+        <input type="text" name="act_input" placeholder="Enter a city name">
+        <input type="submit" value="Search">
+      </form>
+      <h4>Map Search:</h4>   
+      <form>
+        <input type="text" id="search-input">
+        <button type="button" id="search-btn"class="btn2">Search</button>
+      </form>
+
+    <br>
+    <div id="map">
+      <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&callback=initMap" async defer></script>
+    </div>
+  </body>
+</div>
+<script>
+  function initMap() {
+      var map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: -34.397, lng: 150.644},
+          zoom: 8
+      });
+
+      var geocoder = new google.maps.Geocoder();
+
+      document.getElementById('search-btn').addEventListener('click', function() {
+          var address = document.getElementById('search-input').value;
+          geocoder.geocode({'address': address}, function(results, status) {
+              if (status === 'OK') {
+                  var location = results[0].geometry.location;
+                  var marker = new google.maps.Marker({
+                      position: location,
+                      map: map
+                  });
+                  map.setCenter(location);
+              } else {
+                  alert('Geocode was not successful for the following reason: ' + status);
+              }
+          });
+      });
+  }
+</script>
+{% endblock %}

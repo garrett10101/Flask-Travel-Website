@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="jumbo">
+    <div class="btn-container">
+        <body>
+            <head>
+            </head>
+            <h3>Enter Flight Information</h3>
+            <form method="POST" action="{{ url_for('result') }}">
+                <div style="display: flex; flex-direction: column;">
+                    <div style="margin-bottom: 5px;">
+                        <h5>Origin: &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Destination:<br>
+                           <input type="text" name="origin" id="origin"required>
+                        &emsp;&emsp;
+                        <input type="text" name="destination" id="destination"required></h5>
+              
+                        <h5>Departing Date: &emsp;&emsp;  Return Date:<br>
+                        <input type="date" id="depart" name="depart"required>
+                        &emsp;&emsp;&emsp;&emsp;
+                     <input type="date" id="retun" name="return"></h5>
+                 </div>
+                    <div>
+                        <h5>Adults: &emsp;&emsp;Children:&emsp;&emsp; Infants: <br>
+                        <input type="text1" id="adults" name="adults">
+                        &emsp;&emsp;
+                        <input type="text1" id="children" name="children">
+                        &emsp;&emsp;
+                        <input type="text1" id="infants" name="infants"></h5>
+                    </div> 
+                    <div>
+                     <h5>
+                        <label for="cabinClass"style="font-size: 20px;">Cabin Class:&emsp;&emsp;&emsp;&emsp;Sort by:
+                        <label for="sortBy"style="font-size: 20px;"></label>
+                        <select id="cabinClass" name="cabinClass" style="background-color: #f4f4f4;padding: 10px;font-size: 16px;border-radius: 5px 0 0 5px;border: none;width: 125px;">
+                          <option value="economy">Economy</option>
+                          <option value="premium_economy">Premium Economy</option>
+                          <option value="business">Business</option>
+                          <option value="first">First</option>
+                        </select>
+                        &emsp;&emsp;&emsp;
+                        <select id="sortBy" name="sortBy" style="background-color: #f4f4f4;padding: 10px;font-size: 16px;border-radius: 5px 0 0 5px;border: none;width: 125px;">
+                            <option value="best">Best</option>
+                            <option value="price">Price</option>
+                            <option value="duration">Duration</option>
+                            <option value="take_off_time">Take off time</option>
+                            <option value="landing_time">Landing time</option>
+                            <option value="return_take_off_time">Return take off time</option>
+                            <option value="return_landing_time">Return landing time</option>
+                        </select>
+                     </h5>
+                    </div>
+                    <div>
+                        <h5>
+                           <label for="minPrice" style="font-size: 20px;">Min Price&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; Max Price</label> 
+                           <input type="number" id="minPrice" name="minPrice">
+                           &emsp;&emsp;
+                           <input type="number" id="maxPrice" name="maxPrice"><br>                           
+                        </h5>
+                    </div>
+                    <input type="hidden" name="user_input" value="{{ user_input }}">
+                </div>
+                <div class="btn-container" style="margin-top: 550px;">
+                  <button type="submit" name="Submit" value="1" class="btn">Submit</button>
+              </div>
+            </form>
+        </body>
+    </div>
+</div>
+{% endblock %}

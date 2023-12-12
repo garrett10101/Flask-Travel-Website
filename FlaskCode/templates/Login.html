@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="jumbo">
+	<div class="btn-container">
+        <body>
+            <head>
+            </head>
+            <h2>Login</h2>
+  			    <h3 align="center">Go to your account</h3>
+            <form method="POST" action="{{ url_for('result') }}">
+                <div style="display: flex; flex-direction: column;">
+                    <div style="margin-bottom: 5px;">
+						          <h5>Email<br>
+							          <input type="text" id="email" placeholder="Enter Email" name="email" required /></h5>
+						          <h5>Password<br>
+							          <input type="password" id="password1" placeholder="Enter Password" name="password1" required /></h5>					</div>
+				            </div>
+				        <div class="btn-container" style="margin-top: 250px;">
+					        <button type="submit" name="Submit" value="1" class="btn">Submit</button>
+				        </div>
+			      </form>
+		    </body>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "home.html" %}
+
+{% block content %}
+
+    
+<div class="jumbo">
+  <h2>Choose Your Adventure</h2>
+  <h3>What type of booking would you like to make in {{user_input}}?</h3>
+  <div class="btn-container">
+    <form method="POST" action="{{ url_for('flight_info') }}">
+        <input type="hidden" name="user_input" value="{{ user_input }}">
+        <button type="submit" name="flight" value="1" class="btn">Flights</button>
+      </form>    
+      <form method="POST" action="{{ url_for('hotels') }}">
+        <input type="hidden" name="user_input" value="{{ user_input }}">
+        <button type="submit" name="Hotels" value="1" class="btn">Hotels</button>
+      </form>  
+      <form method="POST" action="{{ url_for('act') }}">
+        <input type="hidden" name="user_input" value="{{ user_input }}">
+        <button type="submit" name="Activities" value="1" class="btn">Activities</button>
+      </form>  
+  </div>
+  <div>
+    <h4>Map Search:</h4>   
+      <form>
+        <input type="text" id="search-input">
+        <button type="button" id="search-btn"class="btn2">Search</button>
+      </form>
+
+    <br>
+    <div id="map">
+      <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&callback=initMap" async defer></script>
+
+<script>
+    function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: -34.397, lng: 150.644},
+            zoom: 8
+        });
+
+        var geocoder = new google.maps.Geocoder();
+
+        document.getElementById('search-btn').addEventListener('click', function() {
+            var address = document.getElementById('search-input').value;
+            geocoder.geocode({'address': address}, function(results, status) {
+                if (status === 'OK') {
+                    var location = results[0].geometry.location;
+                    var marker = new google.maps.Marker({
+                        position: location,
+                        map: map
+                    });
+                    map.setCenter(location);
+                } else {
+                    alert('Geocode was not successful for the following reason: ' + status);
+                }
+            });
+        });
+    }
+</script>
+    </div>
+  </div>
+</div>
+{% endblock %}

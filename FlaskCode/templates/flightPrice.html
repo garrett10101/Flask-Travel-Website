@@ -1,0 +1,166 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="jumbo">
+  <div class="btn-container">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+
+</div>
+    <table>
+      <thead>
+        <th><h2>Showing prices for "{{ destination }}"</h2></th>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <form method="post" action="/hotelResult">
+              <input type="hidden" name="user_input" value="{{destination}}">
+              <input type="hidden" name="people" value="{{adults}}">
+              <input type="hidden" name="checkIn" value="{{ depart | format_datetime2 }}">
+              <input type="hidden" name="checkOut" value="{{ return1  | format_datetime2 }}">
+              <input type="submit" value="View Hotels in {{ destination }}">
+            </form>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <form method="post" action="/act">
+              <input type="hidden" name="act_input" value="{{destination}}">
+              <input type="submit" value="View Activities in {{ destination }}">
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="row">
+      <div class="col-md-6">
+        <div id="map">
+          
+        </div>
+      </div>
+      
+        <table>
+          <thead>
+            <tr>
+              <th>Price</th>
+              <th>Orgin</th>
+              <th>Destination</th>
+              <th>Departure</th>
+              <th>Arrival</th>
+              <th>Duration</th>
+              <th>Carrier</th>
+              <th>Stops</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for flight in flights %}
+                <tr>
+                    <td>{{ flight['Price'] | format_price }}</td>                
+                    <td>{{ flight['Origin'] }}</td>
+                    <td>{{ flight['Destination'] }}</td>
+                    <td>{{ flight['Departure'] | format_datetime }}</td>
+                    <td>{{ flight['Arrival']  | format_datetime}}</td>
+                    <td>{{ flight['Duration'] | format_duration}}</td>
+                    <td>{{ flight['Carrier'] }}</td>           
+                    <td>{{ flight['Stops'] }}</td> 
+  
+                    <td>
+                      <form method="post" action="/book">
+                        <input type="hidden" name="flight_id" value="{{ flight['Id'] }}">
+                        <input type="hidden" name="origin" value="{{ origin }}">
+                        <input type="hidden" name="destination" value="{{ destination }}">
+                        <input type="hidden" name="departure" value="{{ flight['Departure'] }}">
+                        <input type="hidden" name="arrival" value="{{ flight.ConnectingArrival }}">
+                        <input type="hidden" name="adults" value="{{ flight['Adults'] }}">
+                        <input type="hidden" name="children" value="{{ flight['Children'] }}">
+                        <input type="hidden" name="infants" value="{{ flight['Infants'] }}">
+                        <input type="hidden" name="cabinClass" value="{{ flight['CabinClass'] }}">
+                        <input type="hidden" name="price" value="{{ flight['Price'] }}">
+                        <input type="submit" value="Select Flight">
+                      </form>
+                    </td> 
+              
+                </tr>
+                {% if flight.ConnectingOrigin %}
+                    <tr>
+                      <td></td>
+                      <td>{{ flight.ConnectingOrigin }}</td>
+                      <td>{{ flight.ConnectingDestination }}</td>
+                      <td>{{ flight.ConnectingDeparture  | format_datetime}}</td>
+                      <td>{{ flight.ConnectingArrival | format_datetime }}</td>
+                      <td>{{ flight.ConnectingDuration | format_duration}}</td>
+                      <td>{{ flight.ConnectingCarrier }}</td>           
+                      <td>{{ flight.ConnectingStops }}</td> 
+  
+          
+                    </tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+  
+                  </td>
+                {% endif %}
+                <tr><td colspan="7"><hr></td></tr>
+            {% endfor %}          
+          </tbody>
+      </table>
+      <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&callback=initMap" async defer></script>
+      <script>
+        function initMap() {
+        var geocoder = new google.maps.Geocoder();
+        var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 5,
+        });
+
+      var origin = '{{ origin_city_name }}';
+      var destination = '{{ dest_city_name }}';
+
+      // Geocode the origin city
+      geocoder.geocode({ 'address': origin }, function(results, status) {
+        if (status === 'OK') {
+          var originLocation = results[0].geometry.location;
+          // Create a marker for the origin
+          var originMarker = new google.maps.Marker({
+            position: originLocation,
+            map: map,
+            title: origin
+          });
+
+          // Geocode the destination city
+          geocoder.geocode({ 'address': destination }, function(results, status) {
+            if (status === 'OK') {
+              var destinationLocation = results[0].geometry.location;
+              // Create a marker for the destination
+              var destinationMarker = new google.maps.Marker({
+                position: destinationLocation,
+                map: map,
+                title: destination
+              });
+
+          // Draw a Polyline between the origin and destination
+          var flightPath = new google.maps.Polyline({
+            path: [originLocation, destinationLocation],
+            geodesic: true,
+            strokeColor: '#FF0000',
+            strokeOpacity: 1.0,
+            strokeWeight: 2
+          });
+          flightPath.setMap(map);
+
+          // Center the map between the origin and destination
+          var bounds = new google.maps.LatLngBounds();
+          bounds.extend(originLocation);
+          bounds.extend(destinationLocation);
+          map.fitBounds(bounds);
+        } else {
+          alert('Geocode was not successful for the following reason: ' + status);
+        }
+      });
+    } else {
+      alert('Geocode was not successful for the following reason: ' + status);
+    }
+  });
+}
+      </script>
+  {% endblock %}
